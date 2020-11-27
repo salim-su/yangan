@@ -1,77 +1,157 @@
 <template>
   <div class="login">
-    <!--    <h1>我是login</h1>-->
-    <!--    <h1>我是login</h1>-->
-    <!--    <h1>我是login</h1>-->
-    <!--    <h1>我是login</h1>-->
-
-    <!--    <div>-->
-    <!--      <van-count-down-->
-    <!--        ref="countDown"-->
-    <!--        millisecond-->
-    <!--        :time="60000"-->
-    <!--        :auto-start="false"-->
-    <!--        format="ss"-->
-    <!--        @finish="finish"-->
-    <!--      />-->
-    <!--      <van-grid clickable>-->
-    <!--        <van-grid-item text="开始" icon="play-circle-o" @click="start" />-->
-    <!--        <van-grid-item text="暂停" icon="pause-circle-o" @click="pause" />-->
-    <!--        <van-grid-item text="重置" icon="replay" @click="reset" />-->
-    <!--      </van-grid>-->
-    <!--    </div>-->
-
     <div class="login-content">
-         <div class="fs12">手机号登录</div>
+      <div class="phone">手机号登录</div>
+
+      <van-cell-group class="mt15" :border="false">
+        <van-field type="number" v-model="phoneValue" placeholder="请输入手机号"/>
+      </van-cell-group>
+
+      <van-cell-group class="flex mt15 align-items-center" :border="false">
+        <van-field type="number" v-model="captchaValue" placeholder="请输入验证码"/>
+        <van-button plain type="info" class="spec-btn" @click="start">
+
+          <template v-if="flag">获取验证码</template>
+          <template v-else>
+            <van-count-down
+              ref="countDown"
+              millisecond
+              :time="60000"
+              :auto-start="false"
+              format="ss秒"
+              @finish="finish"
+            />
+          </template>
+
+        </van-button>
+      </van-cell-group>
+
+      <van-button color="#7232dd" class="mt30" block @click="login">登 录</van-button>
     </div>
   </div>
 </template>
 
 <script>
 import { Toast } from 'vant'
+import { loginSystem, sendCode } from '../../api/user'
 export default {
   name: 'login',
+  data() {
+    return {
+      phoneValue: '',
+      captchaValue: '',
+      flag: true,
+      openid: '',
+      nickname: ''
+    }
+  },
   mounted() {
-    Toast('倒计时结束')
+    // Toast('倒计时结束'
+    this.openid = this.$route.query.openid
+    this.nickname = this.$route.query.nickname
   },
   components: {
     [Toast.name]: Toast
   },
   methods: {
-
     start() {
-      this.$refs.countDown.start()
-    },
-    pause() {
-      this.$refs.countDown.pause()
-    },
-    reset() {
-      this.$refs.countDown.reset()
+      if (!this.phoneValue) {
+        Toast('请输入手机号')
+      } else {
+        const postData = {
+          phoneNumber: this.phoneValue
+        }
+        sendCode(postData).then(res => {
+          console.log(res)
+          this.flag = false
+          Toast('发送验证码成功')
+          setTimeout(res => {
+            this.$refs.countDown.start()
+          }, 300)
+        }).catch(res => {
+          console.log(res)
+        })
+      }
     },
     finish() {
+      this.flag = true
+    },
+    login() {
+      if (!this.phoneValue) {
+        Toast('请输入手机号')
+        return
+      }
+      if (!this.captchaValue) {
+        Toast('请输入验证码')
+        return
+      }
+      const postdata = {
+        nickName: this.nickname,
+        wechatOpenid: this.openid,
+        phoneNumber: this.phoneValue,
+        code: this.captchaValue
+      }
+      console.log(postdata)
+      loginSystem(postdata).then(res => {
+        console.log(res)
+        localStorage.setItem('token_type', res.token_type)
+        localStorage.setItem('nick_name', res.nick_name)
+        localStorage.setItem('token', res.access_token)
+        localStorage.setItem('phone', res.user_name)
+        console.log(window.localStorage)
+        this.$router.push('/')
+      }).catch(res => {
+        console.log(res)
+      })
     }
   }
 }
 </script>
 
 <style scoped>
-.login {
-  width: 100vw;
-  height: 100vh;
-  background-image: url('../../../static/img/login-bg.png');
-  background-size: cover;
-  position: fixed;
-  top: 0;
-  left: 0;
-  box-sizing: border-box;
-  display: flex;
-  justify-content: center;
-  /*background-color: #42b983;*/
-}
-.login-content {
-  background-color: #ccc;
-  width: 310px;
-  height: 350px;
-  margin-top: 155px;
-}
+  .login {
+    width: 375px;
+    height: 667px;
+    background-image: url('../../../static/img/login-bg.png');
+    background-size:cover;
+    /*background-repeat: no-repeat;*/
+    position: fixed;
+    top: 0;
+    left: 0;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    /*background-color: #42b983;*/
+  }
+
+  .login-content {
+    /*background-color: #ccc;*/
+    width: 310px;
+    height: 350px;
+    margin-top: 155px;
+    box-sizing: border-box;
+    padding: 20px;
+  }
+
+  .phone {
+    font-size: 24px;
+    color: #5626B8;
+  }
+
+  .van-field {
+    padding-left: 0;
+  }
+
+  .spec-btn {
+    width: 155px;
+    height: 30px;
+  }
+
+  .van-cell::after {
+    display: none;
+  }
+
+  .van-cell-group {
+    border-bottom: 1px solid #e3e3e3;
+  }
 </style>

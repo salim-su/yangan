@@ -1,113 +1,134 @@
 <!-- home -->
 <template>
-  <div class="about-container">
-    <div class="warpper">
-      <div class="list">
-        <div class="logo"></div>
-        <div class="demo-home__title">VUE H5开发模板</div>
-        <div class="item">
-          项目地址:
-          <a href="https://github.com/sunniejs/vue-h5-template">https://github.com/sunniejs/vue-h5-template</a>
-        </div>
-        <div class="item">项目作者: sunnie</div>
-        <div class="item"></div>
-        <div class="wechat">
-          <img :src="this.wechat" alt="" />
-        </div>
-        <div class="item">关注公众号：回复“加群”即可加 前端仙女群</div>
-        <div class="item">
-          {{ userName }}
-          <van-button v-if="userName == ''" type="warning" size="small" @click="doDispatch">快点我~</van-button>
+  <div class="con">
+    <van-nav-bar
+      title="报警记录列表"
+      :fixed="true"
+    />
+
+    <div class="index-bg">
+
+    </div>
+
+    <div class="d2">
+
+      <div class="d2-item" v-for="(item,index) of list" :key="index">
+        <div class="cell-content flex flex-column">
+          <div class="cell1">
+            <img src="../../../static/img/dingwei.png" alt="" class="imgs">
+            <div class="name">{{item.deviceCategoryText}} {{item.deviceInstallLocation}}</div>
+          </div>
+          <div class="cell2">
+            <div class="name">{{item.alarmCategoryText}}</div>
+          </div>
+          <div class="cell3">
+            <div class="name">{{item.creationTime}}</div>
+          </div>
         </div>
       </div>
+
     </div>
+
   </div>
+
 </template>
 
 <script>
-// 请求接口
-import { getUserInfo } from '@/api/user.js'
-import { mapGetters } from 'vuex'
+import { getAlarmList } from '../../api/user'
+
 export default {
   data() {
     return {
-      wechat: `${this.$cdn}/wx/640.gif`
+      wechat: `${this.$cdn}/wx/640.gif`,
+      list: []
     }
   },
-  computed: {
-    ...mapGetters(['userName'])
-  },
+  computed: {},
   mounted() {
-    this.initData()
+    this.getAlarmListInfo()
   },
   methods: {
-    // 请求数据案例
-    initData() {
-      // 请求接口数据，仅作为展示，需要配置src->config下环境文件
-      const params = { user: 'sunnie' }
-      getUserInfo(params)
-        .then(() => { })
-        .catch(() => { })
-    },
-    // Action 通过 store.dispatch 方法触发
-    doDispatch() {
-      this.$store.dispatch('setUserName', '真乖，赶紧关注公众号，组织都在等你~')
-    },
-    goGithub(index) {
-      window.location.href = 'https://github.com/sunniejs/vue-h5-template'
+    getAlarmListInfo() {
+      getAlarmList().then(res => {
+        console.log(res)
+        this.list = res.data
+      }).catch(res => {
+        console.log(res)
+      })
     }
   }
 }
 </script>
-<style lang="scss">
-.about-container {
-  /* 你的命名空间 */
-  background: #fff;
-  height: 100vh;
-  box-sizing: border-box;
-  .warpper {
-    padding: 50px 12px 12px 12px;
-    .list {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      color: #666;
-      font-size: 14px;
-      .demo-home__title {
-        margin: 0 0 6px;
-        font-size: 32px;
-        .demo-home__title img,
-        .demo-home__title span {
-          display: inline-block;
-          vertical-align: middle;
-        }
-      }
-      .item {
-        font-size: 14px;
-        line-height: 34px;
-        a {
-          text-decoration: underline;
-        }
-        .van-button {
-          /* vant-ui 元素*/
-          background: #ff5500;
-        }
-      }
-
-      .logo {
-        width: 120px;
-        height: 120px;
-        background: url($cdn+'/weapp/logo.png') center / contain no-repeat;
-      }
-      .wechat {
-        width: 200px;
-        height: 200px;
-        img {
-          width: 100%;
-          height: auto;
-        }
-      }
-    }
+<style lang="scss" scoped>
+  .index-bg {
+    width: 100vw;
+    height: 255px;
+    background-image: url('../../../static/img/register-bg.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
   }
-}
+
+  .d2 {
+    margin-top: 60px;
+    width: 100%;
+    height: calc(100vh - 60px);
+    box-sizing: border-box;
+    overflow: auto;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 50px;
+  }
+
+  .con {
+    width: 100vw;
+    height: calc(100vh - 50px);
+    box-sizing: border-box;
+  }
+
+  .content-item {
+    height: 100px;
+    width: 100%;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: #999 1px 0px 3px;
+    margin-top: 20px;
+  }
+
+  .imgs {
+    width: 16px;
+    /*height: 18px;*/
+  }
+
+  .name {
+    font-size: 16px;
+  }
+
+  .d2-item {
+    width: 336px;
+    height: 96px;
+    background-image: url("../../../static/img/wengan.png");
+    margin-bottom: 20px;
+    background-size: cover;
+  }
+
+  .cell-content {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    padding-left: 70px;
+    justify-content: space-evenly;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    /*padding-top: 15px;*/
+  }
+
+  .cell1, .cell2 {
+    display: flex;
+    align-items: center;
+  }
 </style>
+

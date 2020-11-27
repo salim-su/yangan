@@ -60,7 +60,6 @@ export default {
     },
     done() {
       console.log(this.no)
-
       if (!this.no) {
         Toast('请输入设备编号')
         return

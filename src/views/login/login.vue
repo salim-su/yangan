@@ -104,6 +104,7 @@ export default {
         localStorage.setItem('phone', res.user_name)
         this.$router.push('/')
       }).catch(res => {
+        Toast('验证码输入错误')
       })
     }
   }

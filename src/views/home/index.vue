@@ -60,7 +60,8 @@ export default {
     return {
       devicesInfoList: [],
       nickName: '',
-      phone: ''
+      phone: '',
+      timer: ''
     }
   },
 
@@ -72,7 +73,7 @@ export default {
     this.phone = window.localStorage.getItem('phone')
 
     this.getUnHandleAlarmListInfo()
-    setTimeout(res => {
+    this.timer = setInterval(() => {
       this.getUnHandleAlarmListInfo()
     }, 30000)
   },
@@ -85,10 +86,12 @@ export default {
       })
     },
     goOut() {
+      clearInterval(this.timer)
       window.localStorage.clear()
       this.$router.replace('/login')
     },
     edit(item) {
+      clearInterval(this.timer)
       const objAdd = JSON.stringify(item)
       this.$router.replace({ path: '/device-register-info?objAdd=' + encodeURIComponent(objAdd), query: { router: '/home' }})
     },
@@ -101,6 +104,7 @@ export default {
     getUnHandleAlarmListInfo() {
       getUnHandleAlarmList().then(res => {
         if (res.data.length > 0) {
+          clearInterval(this.timer)
           this.$router.replace('/device-alert')
         }
       }).catch(res => {

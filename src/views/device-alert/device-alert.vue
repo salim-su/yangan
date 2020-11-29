@@ -18,7 +18,7 @@
         </div>
 
         <div class="fs16 p5 line">
-          20934080384503850385
+          {{alertInfo.deviceNo}}
         </div>
 
         <div class="fs16 p5">
@@ -26,7 +26,7 @@
         </div>
 
         <div class="fs16 p5 line">
-          20934080384503850385
+          {{alertInfo.deviceName}}
         </div>
 
         <div class="fs16 p5">
@@ -34,7 +34,7 @@
         </div>
 
         <div class="fs16 p5 line">
-          20934080384503850385
+          {{alertInfo.deviceInstallLocation}}
         </div>
 
         <div class="fs16 p5">
@@ -42,10 +42,10 @@
         </div>
 
         <div class="fs16 p5 line">
-          20934080384503850385
+          {{alertInfo.alarmCategoryText}}
         </div>
       </div>
-      <van-button type="primary" block class="chuli">已处理，关闭报警</van-button>
+      <van-button type="primary" block class="chuli" @click="done()">已处理，关闭报警</van-button>
     </div>
 
   </div>
@@ -53,12 +53,42 @@
 
 <script>
 import { Toast } from 'vant'
+import { getUnHandleAlarmList, handleAlarm } from '../../api/user'
 
 export default {
   name: 'device-alert',
+  data() {
+    return {
+      deviceName: '',
+      alertInfo: ''
+    }
+  },
+  mounted() {
+    this.getUnHandleAlarmListInfo()
+  },
   methods: {
     onClickRight() {
       Toast('按钮')
+    },
+    getUnHandleAlarmListInfo() {
+      getUnHandleAlarmList().then(res => {
+        if (res.data.length > 0) {
+          this.alertInfo = res.data[0]
+        } else {
+          this.$router.replace('/')
+        }
+      }).catch(res => {
+      })
+    },
+    done() {
+      const postData = {
+        alarmRecordId: this.alertInfo.alarmRecordId
+      }
+      handleAlarm(postData).then(res => {
+        Toast('处理成功')
+        this.getUnHandleAlarmListInfo()
+      }).catch(res => {
+      })
     }
   }
 }

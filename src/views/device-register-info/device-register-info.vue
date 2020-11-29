@@ -40,6 +40,18 @@
         </div>
 
         <div class="fs16 p5">
+          联系人
+        </div>
+
+        <div class="fs16 p5 line">
+          <van-field v-model="p1" type="number" placeholder="请输入联系人电话"/>
+          <van-field v-model="p2" type="number" placeholder="请输入联系人电话"/>
+          <van-field v-model="p3" type="number" placeholder="请输入联系人电话"/>
+          <van-field v-model="p4" type="number" placeholder="请输入联系人电话"/>
+          <van-field v-model="p5" type="number" placeholder="请输入联系人电话"/>
+        </div>
+
+        <div class="fs16 p5">
           城市
         </div>
 
@@ -108,31 +120,27 @@ export default {
       info: '',
       deviceCategoryText: '',
       no: '',
-      deviceId: ''
+      deviceId: '',
+      gaodeLat: '',
+      gaodeLng: '',
+      p1: '',
+      p2: '',
+      p3: '',
+      p4: '',
+      p5: '',
+      phoneNumbers: []
     }
   },
 
   mounted() {
-    // setTimeout(res => {
-    //   console.log(this.$router.query.objAdd)
-    // }, 200)
-    console.log(this.$route.query.objAdd)
     if (this.$route.query.objAdd) {
       this.patchValue()
     }
-    // if (this.$router.query.objCode) {
-    //   this.patchValueCode()
-    // }
+    this.startJssdk()
   },
   methods: {
-    patchValueCode() {
-      this.info = JSON.parse(this.$route.query.objCode)
-      this.deviceCategoryText = this.info.deviceCategoryText
-      this.no = this.info.imei
-    },
     patchValue() {
       this.info = JSON.parse(this.$route.query.objAdd)
-      console.log(this.info)
       const arr = []
       if (this.info.isCallPhone) {
         arr.push('isCallPhone')
@@ -142,6 +150,24 @@ export default {
       }
       if (this.info.isSendWechat) {
         arr.push('isSendWechat')
+      }
+
+      if (this.info.phoneNumbers) {
+        if (this.info.phoneNumbers[0]) {
+          this.p1 = this.info.phoneNumbers[0]
+        }
+        if (this.info.phoneNumbers[1]) {
+          this.p2 = this.info.phoneNumbers[1]
+        }
+        if (this.info.phoneNumbers[2]) {
+          this.p3 = this.info.phoneNumbers[2]
+        }
+        if (this.info.phoneNumbers[3]) {
+          this.p4 = this.info.phoneNumbers[3]
+        }
+        if (this.info.phoneNumbers[4]) {
+          this.p5 = this.info.phoneNumbers[4]
+        }
       }
 
       this.deviceName = this.info.name
@@ -157,7 +183,6 @@ export default {
       this.$router.replace(this.$route.query.router)
     },
     onConfirm(values) {
-      console.log(values)
       this.cityName = values
         .filter((item) => !!item)
         .map((item) => item.name)
@@ -169,7 +194,6 @@ export default {
       this.showArea = false
     },
     done() {
-      console.log(this.result)
       const postdata = {}
       if (this.result.filter(p => p === 'isCallPhone').length) {
         postdata['isCallPhone'] = 1
@@ -191,20 +215,68 @@ export default {
       postdata['deviceId'] = this.deviceId
       postdata['deviceName'] = this.deviceName
       postdata['installLocation'] = this.installLocation
-      console.log(postdata)
+      postdata['gaodeLat'] = this.gaodeLat
+      postdata['gaodeLng'] = this.gaodeLng
+      this.phoneNumbers = [this.p1, this.p2, this.p3, this.p4, this.p5]
+      this.phoneNumbers = this.phoneNumbers.filter((x) => x !== '')
+      postdata['phoneNumbers'] = this.phoneNumbers
+      if (!postdata['deviceName']) {
+        Toast('请填写设备名称')
+        return
+      }
+      if (!postdata['cityCode']) {
+        Toast('请选择城市')
+        return
+      }
+      if (!postdata['installLocation']) {
+        Toast('请填写安装地址')
+        return
+      }
+      if (postdata['phoneNumbers'].length == 0) {
+        Toast('请至少填写一位联系人信息')
+        return
+      }
       updateDevice(postdata).then(res => {
         Toast('保存成功')
         this.$router.replace('/')
-        console.log(res)
       }).catch(res => {
-        console.log(res)
+      })
+    },
+    startJssdk() {
+      const url = location.href.split('#')[0]
+      this.$axios({
+        method: 'GET',
+        url: `wxapi/wx/jsapi/wx7fbadec3812a8afe/getJsapiSignature?url=${url}`
+      }
+      ).then(res => {
+        this.$wx.config({
+          debug: false,
+          appId: res.data.appId,
+          timestamp: res.data.timestamp,
+          nonceStr: res.data.nonceStr,
+          signature: res.data.signature,
+          jsApiList: [
+            'getLocation',
+            'hideMenuItems'
+          ]
+        })
+        this.$wx.ready(res => {
+          this.$wx.getLocation({
+            debug: false,
+            type: 'wgs84',
+            success: res => {
+              this.gaodeLat = res.latitude
+              this.gaodeLng = res.longitude
+            }
+          })
+        })
+        this.$wx.error(function(res) {})
+      }).catch(res => {
       })
     }
   },
   watch: {
     $route(to, from) {
-      console.log(from.path)// 从哪来
-      console.log(to.path)// 到哪去
     }
   }
 }
@@ -243,6 +315,7 @@ export default {
     border-top-right-radius: 3px;
     padding: 20px;
     box-sizing: border-box;
+    overflow: auto;
   }
   .line{
     border-bottom: 1px solid #e3e3e3;

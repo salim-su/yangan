@@ -44,7 +44,6 @@ export default {
     }
   },
   mounted() {
-    console.log(this.$route.query.router)
   },
   methods: {
     onClickLeft() {
@@ -59,7 +58,6 @@ export default {
     addSelf() {
     },
     done() {
-      console.log(this.no)
       if (!this.no) {
         Toast('请输入设备编号')
         return
@@ -74,15 +72,12 @@ export default {
         const objAdd = JSON.stringify(res.data)
         this.$router.replace({ path: '/device-register-info?objAdd=' + encodeURIComponent(objAdd), query: { router: '/home' }})
       }).catch(res => {
-        console.log(res)
         Toast('设备不存在')
       })
     }
   },
   watch: {
     $route(to, from) {
-      console.log(from.path)// 从哪来
-      console.log(to.path)// 到哪去
     }
   }
 }

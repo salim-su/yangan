@@ -46,9 +46,17 @@ export default {
     }
   },
   mounted() {
+    if (window.localStorage.getItem('token')) {
+      this.$router.replace('/')
+    }
+
     // Toast('倒计时结束'
-    this.openid = this.$route.query.openid
-    this.nickname = this.$route.query.nickname
+    if (this.$route.query.openid) {
+      this.openid = this.$route.query.openid
+    }
+    if (this.$route.query.nickname) {
+      this.nickname = this.$route.query.nickname
+    }
   },
   components: {
     [Toast.name]: Toast
@@ -62,14 +70,12 @@ export default {
           phoneNumber: this.phoneValue
         }
         sendCode(postData).then(res => {
-          console.log(res)
           this.flag = false
           Toast('发送验证码成功')
           setTimeout(res => {
             this.$refs.countDown.start()
           }, 300)
         }).catch(res => {
-          console.log(res)
         })
       }
     },
@@ -91,17 +97,13 @@ export default {
         phoneNumber: this.phoneValue,
         code: this.captchaValue
       }
-      console.log(postdata)
       loginSystem(postdata).then(res => {
-        console.log(res)
         localStorage.setItem('token_type', res.token_type)
         localStorage.setItem('nick_name', res.nick_name)
         localStorage.setItem('token', res.access_token)
         localStorage.setItem('phone', res.user_name)
-        console.log(window.localStorage)
         this.$router.push('/')
       }).catch(res => {
-        console.log(res)
       })
     }
   }

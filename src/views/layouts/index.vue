@@ -46,10 +46,10 @@ export default {
     TabBar
   },
   mounted() {
+
   },
   methods: {
     handleChange(v) {
-      console.log(v)
       if (v === 1) {
         this.$router.replace({ path: '/add-select', query: { router: '/home' }})
       }

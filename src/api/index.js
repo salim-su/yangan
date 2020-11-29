@@ -7,8 +7,10 @@ const api = {
   GetDevices: 'wechat/getDevices',
   UpdateDevice: 'wechat/updateDevice',
   GetDeviceByImei: 'wechat/getDeviceByImei',
-  GetAlarmList: 'wechat/getAlarmList'
-
+  GetAlarmList: 'wechat/getAlarmList',
+  GetUnHandleAlarmList: 'wechat/getUnHandleAlarmList',
+  HandleAlarm: 'wechat/handleAlarm',
+  RemoveDevice: 'wechat/removeDevice'
 }
 
 export default api

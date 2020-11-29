@@ -47,6 +47,7 @@ module.exports = {
   devServer: {
     port: 8080, // 端口
     open: false, // 启动后打开浏览器
+    disableHostCheck: true,
     overlay: {
       //  当出现编译器错误或警告时，在浏览器中显示全屏覆盖层
       warnings: false,
@@ -60,6 +61,15 @@ module.exports = {
         changOrigin: true,
         pathRewrite: {
           '^/api': '/'
+        }
+      },
+      // 配置跨域
+      '/wxapi': {
+        target: 'http://weixin.xinyaiot.com/',
+        // ws:true,
+        changOrigin: true,
+        pathRewrite: {
+          '^/wxapi': '/'
         }
       }
     }

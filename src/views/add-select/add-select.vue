@@ -35,6 +35,8 @@
 </template>
 
 <script>
+import { Toast } from 'vant'
+import { getDeviceByImei } from '../../api/user'
 export default {
   name: 'add-select',
   data() {
@@ -43,7 +45,7 @@ export default {
     }
   },
   mounted() {
-    console.log(this.$route.query.router)
+    this.startJssdk()
   },
   methods: {
     onClickLeft() {
@@ -54,9 +56,53 @@ export default {
       }
     },
     addScan() {
+      this.openQRCode()
     },
     addSelf() {
       this.$router.replace({ path: '/add-code', query: { router: '/add-select' }})
+    },
+    startJssdk() {
+      const url = location.href.split('#')[0]
+      this.$axios({
+        method: 'GET',
+        url: `wxapi/wx/jsapi/wx7fbadec3812a8afe/getJsapiSignature?url=${url}`
+      }
+      ).then(res => {
+        this.$wx.config({
+          debug: false,
+          appId: res.data.appId,
+          timestamp: res.data.timestamp,
+          nonceStr: res.data.nonceStr,
+          signature: res.data.signature,
+          jsApiList: ['scanQRCode', 'checkJsApi']
+        })
+
+        this.$wx.ready(function(res) {})
+        this.$wx.error(function(res) {})
+      }).catch(res => {
+      })
+    },
+    openQRCode() {
+      this.$wx.scanQRCode({
+        needResult: 1,
+        success: res => {
+          const result = res.resultStr
+          if (result != null && result !== '' && result !== undefined) {
+            const postData = {
+              imei: result
+            }
+            getDeviceByImei(postData).then(res => {
+              res.data['no'] = res.data['imei']
+              res.data['id'] = res.data['deviceId']
+              const objAdd = JSON.stringify(res.data)
+              this.$router.replace({ path: '/device-register-info?objAdd=' + encodeURIComponent(objAdd), query: { router: '/home' }})
+            }).catch(res => {
+              Toast('设备不存在')
+            })
+          } else {
+          }
+        }
+      })
     }
   }
 }

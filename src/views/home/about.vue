@@ -50,10 +50,8 @@ export default {
   methods: {
     getAlarmListInfo() {
       getAlarmList().then(res => {
-        console.log(res)
         this.list = res.data
       }).catch(res => {
-        console.log(res)
       })
     }
   }

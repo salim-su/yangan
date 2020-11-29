@@ -94,3 +94,30 @@ export function getAlarmList(params) {
     hideloading: true
   })
 }
+// 获取未处理报警列表
+export function getUnHandleAlarmList(params) {
+  return request({
+    url: api.GetUnHandleAlarmList,
+    method: 'get',
+    params,
+    hideloading: true
+  })
+}
+// 获取未处理报警列表
+export function handleAlarm(data) {
+  return request({
+    url: api.HandleAlarm,
+    method: 'post',
+    data,
+    hideloading: true
+  })
+}
+// 获取未处理报警列表
+export function removeDevice(data) {
+  return request({
+    url: api.RemoveDevice,
+    method: 'post',
+    data,
+    hideloading: true
+  })
+}

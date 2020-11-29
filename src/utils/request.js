@@ -12,7 +12,7 @@ const service = axios.create({
   withCredentials: true, // send cookies when cross-domain requests
   timeout: 5000, // request timeout
   headers: {
-    Authorization: 'Basic d2F0ZXI6d2F0ZXJfc2VjcmV0',
+    Authorization: 'Basic d2F0ZXI6d2F0ZXJfc2VjcmV0'
   }
 })
 
@@ -20,7 +20,7 @@ const service = axios.create({
 service.interceptors.request.use(
   config => {
     console.log(config)
-    config.headers['Blade-Auth'] ='bearer ' + window.localStorage.getItem('token');
+    config.headers['Blade-Auth'] = 'bearer ' + window.localStorage.getItem('token')
     // 不传递默认开启loading
     if (!config.hideloading) {
       // loading
@@ -48,6 +48,9 @@ service.interceptors.response.use(
       // 登录超时,重新登录
       if (res.code === 401) {
         localStorage.clear()
+        window.location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx7fbadec3812a8afe&redirect_uri=http://weixin.xinyaiot.com/wx/redirect/wx7fbadec3812a8afe/iot&response_type=code&scope=snsapi_userinfo&state=123&connect_redirect=1#wechat_redirect'
+
+        // location.reload()
         // store.dispatch('FedLogOut').then(() => {
         //   location.reload()
         // })

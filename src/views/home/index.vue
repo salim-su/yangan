@@ -11,11 +11,11 @@
     </div>
 
     <div class="d1">
-      <div class="flex1 flex-column mt30">
-        <h1 class="mb0 cfff">李佳琪</h1>
-        <h3 class="mt0 cfff">15822442333</h3>
+      <div style="width: 50%;" class=" flex-column mt30">
+        <h1 class="mb0 cfff ct">{{nickname}}</h1>
+        <h3 class="mt0 cfff">{{phone}}</h3>
       </div>
-      <div class="flex1 mt30 flex justify-content-end">
+      <div style="width: 50%;" class=" mt30 flex justify-content-end">
         <img src="../../../static/img/login-out.png" alt="" class="imgs mt25">
         <h2 class="cfff mt25" @click="goOut()">退出登录</h2>
       </div>
@@ -54,12 +54,13 @@
 
 <script>
 import { Toast } from 'vant'
-import { getDevices } from '../../api/user'
-
+import { getDevices, getUnHandleAlarmList, removeDevice } from '../../api/user'
 export default {
   data() {
     return {
-      devicesInfoList: []
+      devicesInfoList: [],
+      nickName: '',
+      phone: ''
     }
   },
 
@@ -67,28 +68,43 @@ export default {
 
   mounted() {
     this.getDevicesInfo()
+    this.nickname = window.localStorage.getItem('nick_name')
+    this.phone = window.localStorage.getItem('phone')
+
+    this.getUnHandleAlarmListInfo()
+    setTimeout(res => {
+      this.getUnHandleAlarmListInfo()
+    }, 30000)
   },
 
   methods: {
     getDevicesInfo() {
       getDevices().then(res => {
-        console.log(res)
         this.devicesInfoList = res.data
       }).catch(res => {
-        console.log(res)
       })
     },
     goOut() {
-      Toast('11111')
+      window.localStorage.clear()
       this.$router.replace('/login')
     },
     edit(item) {
-      console.log(item)
       const objAdd = JSON.stringify(item)
       this.$router.replace({ path: '/device-register-info?objAdd=' + encodeURIComponent(objAdd), query: { router: '/home' }})
     },
     remove(item) {
-      Toast(item)
+      removeDevice({ deviceId: item.id }).then(res => {
+        Toast('删除设备成功')
+        this.getDevicesInfo()
+      })
+    },
+    getUnHandleAlarmListInfo() {
+      getUnHandleAlarmList().then(res => {
+        if (res.data.length > 0) {
+          this.$router.replace('/device-alert')
+        }
+      }).catch(res => {
+      })
     }
   }
 }

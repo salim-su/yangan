@@ -49,7 +49,7 @@ export default {
     if (window.localStorage.getItem('token')) {
       this.$router.replace('/')
     }
-
+    console.log(this.$route.query.openid)
     // Toast('倒计时结束'
     if (this.$route.query.openid) {
       this.openid = this.$route.query.openid

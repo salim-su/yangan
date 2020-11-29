@@ -40,15 +40,27 @@
         </div>
 
         <div class="fs16 p5">
-          联系人
+          联系人电话
         </div>
 
         <div class="fs16 p5 line">
-          <van-field v-model="p1" type="number" placeholder="请输入联系人电话"/>
-          <van-field v-model="p2" type="number" placeholder="请输入联系人电话"/>
-          <van-field v-model="p3" type="number" placeholder="请输入联系人电话"/>
-          <van-field v-model="p4" type="number" placeholder="请输入联系人电话"/>
-          <van-field v-model="p5" type="number" placeholder="请输入联系人电话"/>
+          <van-field v-model="p1" type="number" placeholder="请输入联系人电话1"/>
+        </div>
+
+        <div class="fs16 p5 line">
+          <van-field v-model="p2" type="number" placeholder="请输入联系人电话2"/>
+        </div>
+
+        <div class="fs16 p5 line">
+          <van-field v-model="p3" type="number" placeholder="请输入联系人电话3"/>
+        </div>
+
+        <div class="fs16 p5 line">
+          <van-field v-model="p4" type="number" placeholder="请输入联系人电话4"/>
+        </div>
+
+        <div class="fs16 p5 line">
+          <van-field v-model="p5" type="number" placeholder="请输入联系人电话5"/>
         </div>
 
         <div class="fs16 p5">
